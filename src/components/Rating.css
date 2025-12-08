@@ -1,0 +1,32 @@
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.star {
+  font-size: 24px;
+  color: #d1d5db;
+  cursor: pointer;
+  transition: color 0.2s;
+  user-select: none;
+}
+
+.star.filled {
+  color: #fbbf24;
+}
+
+.star.readonly {
+  cursor: default;
+}
+
+.star:not(.readonly):hover {
+  transform: scale(1.1);
+}
+
+.rating-value {
+  margin-left: 8px;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
