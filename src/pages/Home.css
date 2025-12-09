@@ -58,3 +58,19 @@
   color: #6b7280;
   line-height: 1.6;
 }
+
+.features-intro {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.features-intro h2 {
+  font-size: 32px;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.features-intro p {
+  font-size: 18px;
+  color: #6b7280;
+}

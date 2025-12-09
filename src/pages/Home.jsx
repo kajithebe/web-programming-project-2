@@ -20,6 +20,11 @@ function Home() {
         </div>
       </div>
 
+      <div className="features-intro">
+        <h2>What You Can Do</h2>
+        <p>Explore all the amazing features of our recipe sharing platform</p>
+      </div>
+
       <div className="features">
         <div className="feature-card">
           <h3>🍳 Discover Recipes</h3>

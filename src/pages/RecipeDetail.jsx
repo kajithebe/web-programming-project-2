@@ -1,119 +1,34 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {useParams, Link} from 'react-router-dom';
 import Button from '../components/Button';
 import Rating from '../components/Rating';
-import Input from '../components/Input';
 import './RecipeDetail.css';
 
 function RecipeDetail() {
   const {id} = useParams();
-
+  const [recipe, setRecipe] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [reviewForm, setReviewForm] = useState({
     rating: 0,
     comment: '',
   });
-
   const [submitMessage, setSubmitMessage] = useState('');
 
-  // Sample recipe data
-  const recipes = [
-    {
-      id: 1,
-      title: 'Spaghetti Carbonara',
-      description: 'Classic Italian pasta with eggs, cheese, and bacon',
-      prep_time: 10,
-      cook_time: 20,
-      servings: 4,
-      image_url: '/images/spaghetti.jpg',
-      category: 'Dinner',
-      rating: 5,
-      ingredients: [
-        '400g spaghetti',
-        '200g pancetta or bacon',
-        '4 large eggs',
-        '100g Parmesan cheese, grated',
-        '2 cloves garlic',
-        'Salt and black pepper to taste',
-      ],
-      instructions: [
-        'Bring a large pot of salted water to boil and cook spaghetti according to package directions.',
-        'While pasta cooks, fry pancetta in a large skillet until crispy.',
-        'In a bowl, whisk together eggs and Parmesan cheese.',
-        'Drain pasta, reserving 1 cup of pasta water.',
-        'Add hot pasta to the skillet with pancetta, remove from heat.',
-        'Quickly stir in egg mixture, adding pasta water to create a creamy sauce.',
-        'Season with black pepper and serve immediately.',
-      ],
-    },
-    {
-      id: 2,
-      title: 'Chicken Curry',
-      description: 'Spicy and flavorful Indian curry',
-      prep_time: 15,
-      cook_time: 30,
-      servings: 6,
-      image_url: '/images/curry.jpg',
-      category: 'Lunch',
-      rating: 4,
-      ingredients: [
-        '500g chicken breast, cubed',
-        '2 onions, chopped',
-        '3 cloves garlic, minced',
-        '2 tbsp curry powder',
-        '400ml coconut milk',
-        '2 tomatoes, chopped',
-        '2 tbsp vegetable oil',
-        'Salt to taste',
-        'Fresh cilantro for garnish',
-      ],
-      instructions: [
-        'Heat oil in a large pot over medium heat.',
-        'Add onions and cook until softened, about 5 minutes.',
-        'Add garlic and curry powder, cook for 1 minute until fragrant.',
-        'Add chicken and cook until lightly browned.',
-        'Add tomatoes and cook for 5 minutes.',
-        'Pour in coconut milk and bring to a simmer.',
-        'Cook for 20 minutes until chicken is cooked through and sauce has thickened.',
-        'Season with salt and garnish with fresh cilantro.',
-        'Serve hot with rice or naan bread.',
-      ],
-    },
-    {
-      id: 3,
-      title: 'Chocolate Cake',
-      description: 'Rich and moist chocolate dessert',
-      prep_time: 20,
-      cook_time: 35,
-      servings: 8,
-      image_url: '/images/cake.jpg',
-      category: 'Dessert',
-      rating: 5,
-      ingredients: [
-        '2 cups all-purpose flour',
-        '2 cups sugar',
-        '3/4 cup cocoa powder',
-        '2 tsp baking soda',
-        '1 tsp salt',
-        '2 eggs',
-        '1 cup buttermilk',
-        '1 cup vegetable oil',
-        '1 cup hot water',
-        '1 tsp vanilla extract',
-      ],
-      instructions: [
-        'Preheat oven to 350°F (175°C). Grease and flour two 9-inch cake pans.',
-        'In a large bowl, mix together flour, sugar, cocoa, baking soda, and salt.',
-        'Add eggs, buttermilk, oil, and vanilla. Beat for 2 minutes.',
-        'Stir in hot water (batter will be thin).',
-        'Pour batter into prepared pans.',
-        'Bake for 30-35 minutes until a toothpick comes out clean.',
-        'Cool in pans for 10 minutes, then turn out onto wire racks.',
-        'Frost with your favorite chocolate frosting when completely cool.',
-      ],
-    },
-  ];
-
-  const recipe = recipes.find((r) => r.id === parseInt(id));
+  // Fetch recipe details from backend
+  useEffect(() => {
+    fetch(`http://localhost:5000/api/recipes/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        // Split instructions by newline
+        data.instructions = data.instructions.split('\n');
+        setRecipe(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching recipe:', error);
+        setLoading(false);
+      });
+  }, [id]);
 
   const handleRatingChange = (value) => {
     setReviewForm({
@@ -131,14 +46,43 @@ function RecipeDetail() {
 
   const handleSubmitReview = (e) => {
     e.preventDefault();
-    console.log('Review submitted:', reviewForm);
-    setSubmitMessage('✓ Thank you for your review!');
 
-    setTimeout(() => {
-      setReviewForm({rating: 0, comment: ''});
-      setSubmitMessage('');
-    }, 3000);
+    // Submit review to backend
+    fetch(`http://localhost:5000/api/recipes/${id}/reviews`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: 1, // Using default user for now
+        rating: reviewForm.rating,
+        comment: reviewForm.comment,
+      }),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        setSubmitMessage('✓ Thank you for your review!');
+
+        setTimeout(() => {
+          setReviewForm({rating: 0, comment: ''});
+          setSubmitMessage('');
+          // Refresh recipe to show updated rating
+          window.location.reload();
+        }, 2000);
+      })
+      .catch((error) => {
+        console.error('Error submitting review:', error);
+        setSubmitMessage('❌ Error submitting review. Please try again.');
+      });
   };
+
+  if (loading) {
+    return (
+      <div className="recipe-detail">
+        <h1>Loading recipe...</h1>
+      </div>
+    );
+  }
 
   if (!recipe) {
     return (
@@ -167,9 +111,13 @@ function RecipeDetail() {
           <h1>{recipe.title}</h1>
           <p className="recipe-description">{recipe.description}</p>
           <div className="recipe-rating">
-            <Rating initialRating={recipe.rating} readOnly={true} />
+            <Rating
+              initialRating={Math.round(recipe.avg_rating)}
+              readOnly={true}
+            />
             <span className="rating-text">
-              Average Rating: {recipe.rating}/5
+              Average Rating: {recipe.avg_rating.toFixed(1)}/5 (
+              {recipe.review_count} reviews)
             </span>
           </div>
           <div className="recipe-stats">
@@ -192,11 +140,17 @@ function RecipeDetail() {
       <div className="recipe-content">
         <div className="ingredients-section">
           <h2>Ingredients</h2>
-          <ul>
-            {recipe.ingredients.map((ingredient, index) => (
-              <li key={index}>{ingredient}</li>
-            ))}
-          </ul>
+          {recipe.ingredients && recipe.ingredients.length > 0 ? (
+            <ul>
+              {recipe.ingredients.map((ingredient, index) => (
+                <li key={index}>
+                  {ingredient.quantity} {ingredient.unit} {ingredient.name}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No ingredients listed yet.</p>
+          )}
         </div>
 
         <div className="instructions-section">
@@ -212,7 +166,13 @@ function RecipeDetail() {
       <div className="review-section">
         <h2>Rate this Recipe</h2>
         {submitMessage && (
-          <div className="success-message">{submitMessage}</div>
+          <div
+            className={`message ${
+              submitMessage.includes('✓') ? 'success-message' : 'error-message'
+            }`}
+          >
+            {submitMessage}
+          </div>
         )}
         <form onSubmit={handleSubmitReview} className="review-form">
           <div className="rating-input">

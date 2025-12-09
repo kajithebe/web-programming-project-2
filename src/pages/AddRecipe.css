@@ -30,3 +30,77 @@
   margin-bottom: 20px;
   font-weight: 500;
 }
+
+.error-message {
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.ingredients-input-section {
+  margin: 24px 0;
+}
+
+.ingredients-input-section h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
+  color: #1f2937;
+}
+
+.ingredient-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.ingredient-name-input,
+.ingredient-quantity-input,
+.ingredient-unit-input {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.ingredient-name-input:focus,
+.ingredient-quantity-input:focus,
+.ingredient-unit-input:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.remove-ingredient-btn {
+  padding: 8px 12px;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.remove-ingredient-btn:hover {
+  background-color: #dc2626;
+}
+
+.add-ingredient-btn {
+  padding: 8px 16px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.add-ingredient-btn:hover {
+  background-color: #059669;
+}
