@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import routes from './routes.js';
+import recipeRoutes from './routes/recipeRoutes.js';
 
 const app = express();
 const PORT = 5000;
@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/api', routes);
+app.use('/api', recipeRoutes);
 
 // Test route
 app.get('/api/test', (req, res) => {
